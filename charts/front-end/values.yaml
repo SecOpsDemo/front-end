@@ -1,4 +1,4 @@
-fullnameOverride: sample-vue
+fullnameOverride: front-end
 
 replicaCount: 1
 
@@ -31,7 +31,7 @@ service:
 
 ingress:
   enabled: true
-  subdomain: sample-vue
+  subdomain: front-end
   basedomain: 127.0.0.1.nip.io
   # hosts:
   #   - front-end-dev.soc1.bespin-mss.com
