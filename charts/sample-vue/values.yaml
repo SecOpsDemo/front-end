@@ -1,0 +1,91 @@
+fullnameOverride: sample-vue
+
+replicaCount: 1
+
+profile: default
+
+namespace: development
+
+image:
+  repository: acme
+  tag: latest
+  pullPolicy: Always
+
+dockerRegistrySecret: regcred
+
+labels: {}
+annotations: {}
+
+pod:
+  labels: {}
+  annotations: {}
+
+pdb: {}
+
+service:
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 80
+  annotations: {}
+  labels: {}
+
+ingress:
+  enabled: true
+  subdomain: sample-vue
+  basedomain: 127.0.0.1.nip.io
+  # hosts:
+  #   - front-end-dev.soc1.bespin-mss.com
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/use-regex: "true"
+    # ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
+  labels: {}
+
+autoscaling:
+  enabled: true
+  min: 1
+  max: 5
+  cpu: 80
+  mem: 80
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 120m
+    memory: 153Mi
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 3
+  periodSeconds: 10
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 3
+  periodSeconds: 10
+  failureThreshold: 3
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env: {}
+
+configmap:
+  enabled: false
+  data: {}
+
+secret:
+  enabled: false
+  data: {}
