@@ -83,7 +83,7 @@ podTemplate(label: label, containers: [
         container("builder") {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
-            butler.deploy("here", "sock-shop-dev", "${IMAGE_NAME}-dev", "dev")
+            butler.deploy("here", "sock-shop", "${IMAGE_NAME}-dev", "product")
             butler.success(SLACK_TOKEN_DEV, "Deploy DEV")
           } catch (e) {
             butler.failure(SLACK_TOKEN_DEV, "Deploy DEV")
