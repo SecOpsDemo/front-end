@@ -83,6 +83,18 @@ spec:
           - secretRef:
               name: {{ include "fullname" . }}
 {{ end }}
+
+        ports:
+        - containerPort: 8079
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 10001
+          capabilities:
+            drop:
+              - all
+          readOnlyRootFilesystem: true
+
+
 {{ if .Values.dockerRegistrySecret }}
       imagePullSecrets:
       - name: {{ .Values.dockerRegistrySecret }}

@@ -25,16 +25,16 @@ pdb: {}
 service:
   type: ClusterIP
   externalPort: 80
-  internalPort: 80
+  internalPort: 8079
   annotations: {}
   labels: {}
 
 ingress:
   enabled: true
-  subdomain: front-end
-  basedomain: 127.0.0.1.nip.io
-  # hosts:
-  #   - front-end-dev.soc1.bespin-mss.com
+  # subdomain: front-end
+  # basedomain: 127.0.0.1.nip.io
+  hosts:
+    - sockshop.soc1.bespin-mss.com
   annotations:
     kubernetes.io/ingress.class: nginx
     # https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
