@@ -79,6 +79,23 @@ podTemplate(label: label, containers: [
           }
         )
       }
+
+      stage('Scan Image - Prisma Cloud') {
+        // Scan the image
+        this.VERSION = butler.get_version()
+        echo "# scan version: ${VERSION}"
+        prismaCloudScanImage ca: '',
+          cert: '',
+          dockerAddress: 'unix:///var/run/docker.sock',
+          image: "${IMAGE_NAME}:${VERSION}",
+          key: '',
+          logLevel: 'info',
+          podmanPath: '',
+          project: "${IMAGE_NAME}",
+          resultsFile: 'prisma-cloud-scan-results.json',
+          ignoreImageBuildTime:true
+      }
+
       stage("Deploy Here") {
         container("builder") {
           try {
@@ -90,6 +107,12 @@ podTemplate(label: label, containers: [
             throw e
           }
         }
+      }
+    }
+
+    post {
+      always {
+        prismaCloudPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
       }
     }
   }
