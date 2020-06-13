@@ -86,7 +86,7 @@ podTemplate(label: label, containers: [
         echo "# scan version: ${VERSION}"
         prismaCloudScanImage ca: '',
           cert: '',
-          dockerAddress: 'unix:///var/run/docker.sock',
+          dockerAddress: '',
           image: "${IMAGE_NAME}:${VERSION}",
           key: '',
           logLevel: 'info',
