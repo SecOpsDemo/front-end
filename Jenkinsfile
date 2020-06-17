@@ -94,6 +94,8 @@ podTemplate(label: label, containers: [
           project: '',
           resultsFile: 'prisma-cloud-scan-results.json',
           ignoreImageBuildTime:true
+        
+        prismaCloudPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
       }
 
       stage('Deploy Here') {
@@ -106,12 +108,6 @@ podTemplate(label: label, containers: [
             butler.failure(SLACK_TOKEN_DEV, 'Deploy DEV')
             throw e
           }
-        }
-      }
-      
-      post {
-        always {
-          prismaCloudPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
         }
       }
     }
