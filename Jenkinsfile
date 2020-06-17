@@ -86,12 +86,12 @@ podTemplate(label: label, containers: [
         echo "# scan version: ${VERSION}"
         prismaCloudScanImage ca: '',
           cert: '',
-          dockerAddress: '',
+          dockerAddress: 'unix:///var/run/docker.sock',
           image: "${IMAGE_NAME}:${VERSION}",
           key: '',
           logLevel: 'info',
           podmanPath: '',
-          project: "${IMAGE_NAME}",
+          project: '',
           resultsFile: 'prisma-cloud-scan-results.json',
           ignoreImageBuildTime:true
       }
