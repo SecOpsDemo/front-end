@@ -87,7 +87,7 @@ podTemplate(label: label, containers: [
         prismaCloudScanImage ca: '',
           cert: '',
           dockerAddress: 'unix:///var/run/docker.sock',
-          image: "${IMAGE_NAME}:${VERSION}",
+          image: "docker-registry-devops.soc1.bespin-mss.com/${IMAGE_NAME}:${VERSION}",
           key: '',
           logLevel: 'info',
           podmanPath: '',
