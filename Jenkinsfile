@@ -1,34 +1,34 @@
-def SERVICE_GROUP = "front"
-def SERVICE_NAME = "end"
+def SERVICE_GROUP = 'front'
+def SERVICE_NAME = 'end'
 def IMAGE_NAME = "${SERVICE_GROUP}-${SERVICE_NAME}"
-def REPOSITORY_URL = "https://github.com/SecOpsDemo/front-end.git"
-def REPOSITORY_SECRET = ""
-def SLACK_TOKEN_DEV = ""
-def SLACK_TOKEN_DQA = ""
+def REPOSITORY_URL = 'https://github.com/SecOpsDemo/front-end.git'
+def REPOSITORY_SECRET = ''
+def SLACK_TOKEN_DEV = ''
+def SLACK_TOKEN_DQA = ''
 
-@Library("github.com/opsnow-tools/valve-butler")
+@Library('github.com/opsnow-tools/valve-butler')
 def butler = new com.opsnow.valve.v7.Butler()
 def label = "worker-${UUID.randomUUID().toString()}"
 
 properties([
-  buildDiscarder(logRotator(daysToKeepStr: "60", numToKeepStr: "30"))
+  buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '30'))
 ])
 podTemplate(label: label, containers: [
-  containerTemplate(name: "builder", image: "opsnowtools/valve-builder:v0.2.2", command: "cat", ttyEnabled: true, alwaysPullImage: true),
-  containerTemplate(name: "node", image: "node:10", command: "cat", ttyEnabled: true)
+  containerTemplate(name: 'builder', image: 'opsnowtools/valve-builder:v0.2.2', command: 'cat', ttyEnabled: true, alwaysPullImage: true),
+  containerTemplate(name: 'node', image: 'node:10', command: 'cat', ttyEnabled: true)
 ], volumes: [
-  hostPathVolume(mountPath: "/var/run/docker.sock", hostPath: "/var/run/docker.sock"),
-  hostPathVolume(mountPath: "/home/jenkins/.draft", hostPath: "/home/jenkins/.draft"),
-  hostPathVolume(mountPath: "/home/jenkins/.helm", hostPath: "/home/jenkins/.helm")
+  hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+  hostPathVolume(mountPath: '/home/jenkins/.draft', hostPath: '/home/jenkins/.draft'),
+  hostPathVolume(mountPath: '/home/jenkins/.helm', hostPath: '/home/jenkins/.helm')
 ]) {
   node(label) {
-    stage("Prepare") {
-      container("builder") {
+    stage('Prepare') {
+      container('builder') {
         butler.prepare(IMAGE_NAME)
       }
     }
-    stage("Checkout") {
-      container("builder") {
+    stage('Checkout') {
+      container('builder') {
         try {
           if (REPOSITORY_SECRET) {
             git(url: REPOSITORY_URL, branch: BRANCH_NAME, credentialsId: REPOSITORY_SECRET)
@@ -36,43 +36,43 @@ podTemplate(label: label, containers: [
             git(url: REPOSITORY_URL, branch: BRANCH_NAME)
           }
         } catch (e) {
-          butler.failure(SLACK_TOKEN_DEV, "Checkout")
+          butler.failure(SLACK_TOKEN_DEV, 'Checkout')
           throw e
         }
 
-        butler.scan("nodejs")
+        butler.scan('nodejs')
       }
     }
-    stage("Build") {
-      container("node") {
+    stage('Build') {
+      container('node') {
         try {
           butler.npm_build()
-          butler.success(SLACK_TOKEN_DEV, "Build")
+          butler.success(SLACK_TOKEN_DEV, 'Build')
         } catch (e) {
-          butler.failure(SLACK_TOKEN_DEV, "Build")
+          butler.failure(SLACK_TOKEN_DEV, 'Build')
           throw e
         }
       }
     }
-    if (BRANCH_NAME == "master") {
-      stage("Build Image") {
+    if (BRANCH_NAME == 'master') {
+      stage('Build Image') {
         parallel(
-          "Build Docker": {
-            container("builder") {
+          'Build Docker': {
+            container('builder') {
               try {
                 butler.build_image()
               } catch (e) {
-                butler.failure(SLACK_TOKEN_DEV, "Build Docker")
+                butler.failure(SLACK_TOKEN_DEV, 'Build Docker')
                 throw e
               }
             }
           },
-          "Build Charts": {
-            container("builder") {
+          'Build Charts': {
+            container('builder') {
               try {
                 butler.build_chart()
               } catch (e) {
-                butler.failure(SLACK_TOKEN_DEV, "Build Charts")
+                butler.failure(SLACK_TOKEN_DEV, 'Build Charts')
                 throw e
               }
             }
@@ -96,24 +96,25 @@ podTemplate(label: label, containers: [
           ignoreImageBuildTime:true
       }
 
-      stage("Deploy Here") {
-        container("builder") {
+      stage('Deploy Here') {
+        container('builder') {
           try {
             // deploy(cluster, namespace, sub_domain, profile)
-            butler.deploy("here", "sock-shop", "${IMAGE_NAME}", "product")
-            butler.success(SLACK_TOKEN_DEV, "Deploy DEV")
+            butler.deploy('here', 'sock-shop', "${IMAGE_NAME}", 'product')
+            butler.success(SLACK_TOKEN_DEV, 'Deploy DEV')
           } catch (e) {
-            butler.failure(SLACK_TOKEN_DEV, "Deploy DEV")
+            butler.failure(SLACK_TOKEN_DEV, 'Deploy DEV')
             throw e
           }
         }
       }
-    }
-
-    post {
-      always {
-        prismaCloudPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
+      
+      post {
+        always {
+          prismaCloudPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
+        }
       }
     }
+
   }
 }
