@@ -103,9 +103,9 @@ podTemplate(label: label, containers: [
           try {
             // deploy(cluster, namespace, sub_domain, profile)
             butler.deploy('here', 'sock-shop', "${IMAGE_NAME}", 'product')
-            butler.success(SLACK_TOKEN_DEV, 'Deploy DEV')
+            butler.success(SLACK_TOKEN_DEV, 'Deploy Here')
           } catch (e) {
-            butler.failure(SLACK_TOKEN_DEV, 'Deploy DEV')
+            butler.failure(SLACK_TOKEN_DEV, 'Deploy Here')
             throw e
           }
         }
